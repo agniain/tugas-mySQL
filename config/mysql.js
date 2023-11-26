@@ -4,7 +4,7 @@ const connection = mysql.createConnection({
     host: 'localhost',
     user: 'rootadminer',
     password: 'Rootadminer1',
-    database: 'database-cruds'
+    database: 'database-sequelize'
 });
 
 module.exports = connection;

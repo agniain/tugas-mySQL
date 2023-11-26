@@ -1,29 +1,47 @@
-const connection = require('../../config/mysql');
 const path = require('path');
 const fs = require('fs');
+const Product = require('./model');
+const { Op } = require('sequelize');
 
-const index = (req, res) => {
-    const {search} = req.query;
-    let exec = {};
-    if(search) {
-        exec = {
-            sql: 'SELECT * FROM products WHERE name LIKE ?',
-            values: [`%${search}%`] 
-        }
-    }else {
-        exec = {
-            sql: 'SELECT * FROM products'
-        }
+
+const index = async (req, res) => {
+    try { 
+        const {search} = req.query;
+        let data = {};
+
+        if (search) {
+            data = await Product.findAll({
+                where: {
+                    name: {
+                        [Op.like]: [`%${search}%`]
+                    },
+                },
+            }); 
+        } else {
+            data = await Product.findAll();
+        } 
+        
+        res.json(data);
+
+    } catch (e) {
+        console.error(e); 
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-    connection.query(exec, _response(res)); 
 }
 
-const view = (req, res) => {
-    connection.query({
-        sql: 'SELECT * FROM products WHERE id = ?',
-        values: [req.params.id]
-    }, _response(res));
-}
+const view = async (req, res) => {
+    try {
+        const byuserID = req.params.id;
+        let data = await Product.findAll({ 
+            where: {id: byuserID}
+        });
+         
+        res.json(data);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}     
 
 const store = async (req, res) => {
     const {users_id, name, price, stock, status} = req.body;
@@ -35,52 +53,58 @@ const store = async (req, res) => {
     try {
         await Product.sync();
         const result = await Product.create({users_id, name, price, stock, status, image_url: `http://localhost:3000/public/${image.originalname}`});
-        res.send(result);
-    }catch(e) {
-        res.send(e);
+        res.json(result);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 }
 
-const update = (req, res) => {
-    const {users_id, name, price, stock, status} = req.body;
-    const image = req.file;
-    let sql = '';
-    let values = [];
-    if(image) {
-        const target = path.join(__dirname, '../../uploads', image.originalname);
-        fs.renameSync(image.path, target);
-        sql = 'UPDATE products SET users_id = ?, name = ?, price = ?, stock = ?, status = ?, image_url = ? WHERE id = ?'
-        values = [parseInt(users_id), name, price, stock, status, `http://localhost:3000/public/${image.originalname}`, req.params.id]
-    }else {
-        sql = 'UPDATE products SET users_id = ?, name = ?, price = ?, stock = ?, status = ? WHERE id = ?'
-        values = [parseInt(users_id), name, price, stock, status, req.params.id]
-    }
+const update = async (req, res) => {
+    try {
+        const {users_id, name, price, stock, status} = req.body;
+        const image = req.file;
 
-    connection.query({sql, values}, _response(res));
-}
+        let dataUpdate = {
+            users_id: parseInt(users_id),
+            name,
+            price,
+            stock,
+            status,
+        };
 
-const destroy = (req, res) => {
-    connection.query({
-        sql: 'DELETE * FROM products WHERE id = ?',
-        values: [req.params.id]
-    }, _response(res));
-}
-
-const _response = (res) => {
-    return (error, result) => {
-        if(error) {
-            res.send({
-                status: 'failed',
-                response: 'failed to fetch'
-            });
-        } else{
-            res.send({
-                status: 'success',
-                response: result
-            });
+        if (image) {
+            const target = path.join(__dirname, '../../uploads', image.originalname);
+            fs.renameSync(image.path, target);
+            imageUpdate['image_url'] = `http://localhost:3000/public/${image.originalname}`;
         }
+        
+        const byuserID = req.params.id;
+
+        const [ProdukUpdate] = await Product.update(dataUpdate, {
+            where: {id: byuserID},
+            returning: true,
+        });
+        res.json(ProdukUpdate);
+    } catch (e) {
+        console.error(e); 
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+const destroy = async (req, res) => {
+    try{
+        const byuserID = req.params.id;
+        const ProdukDelete = await Product.destroy({
+            where: {id: byuserID},            
+        });
+        res.json(ProdukDelete);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 
 module.exports = {
     index,

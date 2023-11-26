@@ -11,5 +11,6 @@ app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/v1', productRouter);
 app.use('/api/v2', productRouterV2);
+app.use(express.static('uploads'));
 
 app.listen(3000, () => console.log('Server: http://localhost:3000'))
