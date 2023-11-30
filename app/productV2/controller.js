@@ -33,7 +33,7 @@ const view = async (req, res) => {
     try {
         const byuserID = req.params.id;
         let data = await Product.findAll({ 
-            where: {users_id: byuserID}
+            where: {id: byuserID}
         });
          
         res.json(data);
@@ -84,7 +84,7 @@ const update = async (req, res) => {
         const byuserID = req.params.id;
 
         const [ProdukUpdate] = await Product.update(dataUpdate, {
-            where: {users_id: byuserID},
+            where: {id: byuserID},
             returning: true,
         });
         res.json(ProdukUpdate);
@@ -98,7 +98,7 @@ const destroy = async (req, res) => {
     try{
         const byuserID = req.params.id;
         const ProdukDelete = await Product.destroy({
-            where: {users_id: byuserID},            
+            where: {id: byuserID},            
         });
         res.json(ProdukDelete);
     } catch (e) {

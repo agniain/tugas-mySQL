@@ -2,6 +2,11 @@ const sequelize = require('../../config/sequelize');
 const { Sequelize, DataTypes } = require('sequelize');
 
 const Product = sequelize.define('Product', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     users_id: {
         type: DataTypes.INTEGER,
         allowNull: false
@@ -26,6 +31,9 @@ const Product = sequelize.define('Product', {
     image_url: {
         type: DataTypes.TEXT
     }
+}, {
+    timestamps: false
 });
+
 
 module.exports = Product;
