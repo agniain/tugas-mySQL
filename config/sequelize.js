@@ -1,11 +1,8 @@
 const {Sequelize} = require('sequelize');
 
-const sequelize = new Sequelize({
-    database: 'database-sequelize',
-    host: 'localhost',
-    username: 'rootadminer',
-    password: 'Rootadminer1',
-    dialect: 'mysql'
+const sequelize = new Sequelize('sql12666123', 'sql12666123','3ycPS6BRhl', {
+  host: 'sql12.freesqldatabase.com',
+  dialect: 'mysql'
 });
 
 (async () => {

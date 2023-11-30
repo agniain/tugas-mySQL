@@ -33,7 +33,7 @@ const view = async (req, res) => {
     try {
         const byuserID = req.params.id;
         let data = await Product.findAll({ 
-            where: {id: byuserID}
+            where: {users_id: byuserID}
         });
          
         res.json(data);
@@ -51,8 +51,8 @@ const store = async (req, res) => {
         fs.renameSync(image.path, target);
     }
     try {
-        await Product.sync();
-        const result = await Product.create({users_id, name, price, stock, status, image_url: `http://localhost:3000/public/${image.originalname}`});
+        const imgUrl = `/public/${image.originalname}`;
+        const result = await Product.create({users_id, name, price, stock, status, image_url: req.baseUrl + imgUrl });
         res.json(result);
     } catch (e) {
         console.error(e);
@@ -73,10 +73,12 @@ const update = async (req, res) => {
             status,
         };
 
+        let imageUpdate = {};
         if (image) {
             const target = path.join(__dirname, '../../uploads', image.originalname);
             fs.renameSync(image.path, target);
-            imageUpdate['image_url'] = `http://localhost:3000/public/${image.originalname}`;
+            const imgUrl = `/public/${image.originalname}`;
+            imageUpdate['image_url'] = req.baseUrl + imgUrl;
         }
         
         const byuserID = req.params.id;
