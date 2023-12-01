@@ -124,6 +124,7 @@ const fullHostUrl = (req, res) => (req.protocol + '://' + req.get('host'));
 const mappingProductData = (req, res) => (data) => {
     const mProduct = data.map((product) => {
         product.image_url = fullHostUrl(req, res) + product.image_url
+
         return product;
     });
 
