@@ -1,6 +1,7 @@
 const {Sequelize} = require('sequelize');
+const mysql = require('mysql2');
 
-const sequelize = new Sequelize('sql12666123', 'sql12666123','3ycPS6BRhl', {
+const sequelize = new Sequelize('sql12669230', 'sql12669230','gVrfWyWgYS', {
   host: 'sql12.freesqldatabase.com',
   dialect: 'mysql'
 });

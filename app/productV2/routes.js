@@ -10,9 +10,6 @@ router.post('/product/', upload.single('image'), productController.store);
 
 router.put('/product/:id', upload.single('image'), productController.update);
 
-// TODO: 
-// Make the method as DELETE and remove the upload.single code.
-// Example: router.delete('/product/:id', productController.destroy);
 router.delete('/product/:id', upload.single('image'), productController.destroy);
 
 module.exports = router;
